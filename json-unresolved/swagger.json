@@ -1,0 +1,904 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "DAMAGE iD API helps rental agencies and transportation fleets to manage fleet condition. See more at https://damageid.com",
+    "version" : "1.0.1",
+    "title" : "DAMAGE iD API",
+    "termsOfService" : "https://damageid.com/privacy-policy/",
+    "contact" : {
+      "email" : "support@damageid.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host" : "api.damageid.com",
+  "tags" : [ {
+    "name" : "car",
+    "description" : "May include cars, vans, trucks, RVs."
+  }, {
+    "name" : "case",
+    "description" : "A case defines a \"before-and-after\" series of photos or videos."
+  }, {
+    "name" : "user",
+    "description" : "Operations about users"
+  }, {
+    "name" : "company",
+    "description" : "Operations about companies"
+  }, {
+    "name" : "photo",
+    "description" : "Operations about photo or videos of vehicle condition"
+  }, {
+    "name" : "damage",
+    "description" : "Operations about damage identified on vehicles."
+  }, {
+    "name" : "login",
+    "description" : "Operations about authentication and access."
+  }, {
+    "name" : "logging",
+    "description" : "Operations about logging and tracking activity for debugging and stats."
+  } ],
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/authenticate" : {
+      "post" : {
+        "tags" : [ "user", "login" ],
+        "summary" : "Login User",
+        "description" : "Login user with username and password and obtain an authorization id.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "Login",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/Login"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      },
+      "options" : {
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/SuccessOptions"
+            },
+            "headers" : {
+              "Access-Control-Allow-Origin" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Methods" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Credentials" : {
+                "type" : "string"
+              },
+              "Access-Control-Allow-Headers" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/car/create" : {
+      "post" : {
+        "tags" : [ "car", "company" ],
+        "summary" : "Create New Car",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "licensePlate",
+          "in" : "query",
+          "description" : "Vehicle license plate number.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "unitNumber",
+          "in" : "query",
+          "description" : "unit Number or VIN",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "vehicle created"
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/create" : {
+      "post" : {
+        "tags" : [ "case" ],
+        "summary" : "Create a new case",
+        "description" : "Create a new case, given a unitNumber.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "unitNumber",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "case created.",
+            "schema" : {
+              "$ref" : "#/definitions/NewCaseCreated"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/insure/{caseId}" : {
+      "put" : {
+        "tags" : [ "case", "car" ],
+        "summary" : "Accept Insurance",
+        "description" : "Mark case as user accepted insurance.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "caseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/list" : {
+      "post" : {
+        "tags" : [ "case" ],
+        "summary" : "List Cases",
+        "description" : "Find all cases for currently logged in user.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/show" : {
+      "post" : {
+        "tags" : [ "case" ],
+        "summary" : "Show Cases",
+        "description" : "Show most recent open case by unit number or license plate.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/CaseShowResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/show/{caseId}" : {
+      "post" : {
+        "tags" : [ "case" ],
+        "summary" : "Show Case Details",
+        "description" : "This can only be done by the logged in user. If unitNumber or licensePlate are provided, the latest case will be returned. If id is provided, that case id will be returned.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "caseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/CaseShowResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/sign/{caseId}" : {
+      "put" : {
+        "tags" : [ "case" ],
+        "summary" : "Capture Return Signature",
+        "description" : "Capture an encoded signature on the case. Note the going-out signature is captured on case create.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "caseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "ReturnSignature",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/ReturnSignature"
+          }
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/updateStatus/{caseId}" : {
+      "put" : {
+        "tags" : [ "case" ],
+        "summary" : "Update Case Status",
+        "description" : "Update status of the case.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "caseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/case/uploadPhotos/{caseId}" : {
+      "put" : {
+        "tags" : [ "case", "car" ],
+        "summary" : "Update Photos in Case",
+        "description" : "Capture confirmation of photo upload. Note this method does not actually accept photos. Photos are sent directly to cloud storage.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "caseId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/damage/add" : {
+      "put" : {
+        "tags" : [ "damage" ],
+        "summary" : "Add Damage",
+        "description" : "Add new vehicle damage",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "AddDamage",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/AddDamage"
+          }
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/damage/delete/{damageId}" : {
+      "delete" : {
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "damageId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/damage/list" : {
+      "get" : {
+        "tags" : [ "damage" ],
+        "summary" : "List Damage",
+        "description" : "List current vehicle damage",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "skipImages",
+          "in" : "query",
+          "description" : "Skip generation of signed image urls. Used to improve response performance.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "unitNumber",
+          "in" : "query",
+          "description" : "unit number of vehicle. Can be numeric or string.",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/DamageListResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/damage/toggleFixed/{damageid}" : {
+      "post" : {
+        "tags" : [ "damage" ],
+        "summary" : "Toggle Fixed",
+        "description" : "Toggle damage's fixed status",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "damageid",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/damage/update/{damageId}" : {
+      "post" : {
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "damageId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { }
+      }
+    },
+    "/mobileLog/error" : {
+      "post" : {
+        "tags" : [ "logging" ],
+        "summary" : "Log Remote Errors",
+        "description" : "Capture errors or exceptions on remote device.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/mobileUploadActivity/track" : {
+      "post" : {
+        "tags" : [ "logging" ],
+        "summary" : "Log Photo Upload",
+        "description" : "Track user photo uploads to cloud.",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/photo/history" : {
+      "get" : {
+        "tags" : [ "photo" ],
+        "description" : "Photo history",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "unitNumber",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/PhotoHistoryResponse"
+            }
+          }
+        },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    },
+    "/registration/newcompany/create" : {
+      "post" : {
+        "tags" : [ "company" ],
+        "summary" : "New Company Account",
+        "description" : "Accept new company account request.",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "NewCompany",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/NewCompany"
+          }
+        } ],
+        "responses" : { },
+        "security" : [ {
+          "api_key" : [ ]
+        } ]
+      }
+    }
+  },
+  "securityDefinitions" : {
+    "api_key" : {
+      "type" : "apiKey",
+      "name" : "x-api-key",
+      "in" : "header"
+    }
+  },
+  "definitions" : {
+    "PhotoHistoryResponse" : {
+      "type" : "array",
+      "description" : "Array of photo and video history. Sorted from oldest to newest photos taken.",
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Unique identifier for this photo or video."
+          },
+          "case_number" : {
+            "type" : "integer",
+            "description" : "Case identifier. Cases group together 'before' and 'after' photos"
+          },
+          "before_after" : {
+            "type" : "boolean",
+            "description" : "Whether this photo was taken before 0 - (checkout) or 1 - after (on return)"
+          },
+          "position" : {
+            "type" : "integer",
+            "description" : "Photo position. Varies whether 5 or 7 photo option is selected."
+          },
+          "see_something" : {
+            "type" : "boolean",
+            "description" : "Whether something was seen during walk-around, or photo-taking process on app."
+          },
+          "missed_something" : {
+            "type" : "boolean",
+            "description" : "Whether something was seen during photo review in Review Portal"
+          },
+          "format" : {
+            "type" : "integer",
+            "description" : "1 is photo, 2 is video."
+          },
+          "license_plate" : {
+            "type" : "string",
+            "description" : "license plate number of vehicle"
+          },
+          "photo" : {
+            "type" : "string",
+            "description" : "Url of the photo"
+          },
+          "sequence" : {
+            "type" : "integer",
+            "description" : "A sequence number associated with the number of pictures taken."
+          }
+        }
+      }
+    },
+    "CaseShowResponse" : {
+      "type" : "object",
+      "properties" : {
+        "msg" : {
+          "type" : "integer",
+          "description" : "Message regarding whether case was found. NO CASE FOUND = 3, CASE FOUND = 4, NO SUCH VEHICLE = 5,ARCHIVED VEHICLE = 6"
+        },
+        "caseNumber" : {
+          "type" : "integer",
+          "description" : "number of latest case for this vehicle, either open or closed."
+        },
+        "carId" : {
+          "type" : "integer",
+          "description" : "internal id of vehicle (this is not same as unit number)"
+        },
+        "status" : {
+          "type" : "integer",
+          "description" : "Case status. ONRENT = 0 RFR = 1 PASS = 2 FAIL = 3 UPLOAD = 4 UPLOAD10 = 5 UPLOAD20 = 6 UPLOAD30 = 7 UPLOAD40 = 8 UPLOAD50 = 9 UPLOAD60 = 10 UPLOAD70 = 11 UPLOAD80 = 12 UPLOAD90 = 13 INCOMPLETE = 14 ARCHIVED = 15"
+        },
+        "unitNumber" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "licensePlate" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "model" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "thumbnailUrl" : {
+          "type" : "string",
+          "description" : ""
+        },
+        "photosBefore" : {
+          "type" : "integer",
+          "description" : ""
+        },
+        "photosAfter" : {
+          "type" : "string",
+          "description" : "internal id of vehicle (this is not same as unit number)"
+        },
+        "photos" : {
+          "type" : "array",
+          "description" : "All photos taken during the \"going out\" or \"before\" in case",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "p" : {
+                "type" : "integer",
+                "description" : ""
+              },
+              "b" : {
+                "type" : "integer",
+                "description" : ""
+              },
+              "d" : {
+                "type" : "integer",
+                "description" : ""
+              },
+              "l" : {
+                "type" : "integer",
+                "description" : ""
+              }
+            }
+          }
+        },
+        "companySettings" : {
+          "type" : "object",
+          "description" : "Company settings defined in settings section of Review Portal",
+          "properties" : {
+            "customPositionLabels" : {
+              "type" : "object",
+              "description" : "A list of position ids with names for the values. Keys of the object are position number, and values are strings user entered in for each label in Settings section of Review Portal",
+              "properties" : { }
+            },
+            "signature" : {
+              "type" : "integer",
+              "description" : "Whether signature is required for \"going out\" walk-around."
+            },
+            "ret_signature" : {
+              "type" : "integer",
+              "description" : "Whether signature is required for \"return\" walk-around."
+            }
+          }
+        },
+        "existingDamage" : {
+          "type" : "array",
+          "description" : "Array of existing damages to this vehicle.",
+          "items" : {
+            "$ref" : "#/definitions/Damage"
+          }
+        }
+      }
+    },
+    "NewCompany" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The first and last name of user requesting new company account."
+        },
+        "company" : {
+          "type" : "string",
+          "description" : "Company Name"
+        },
+        "phone" : {
+          "type" : "string",
+          "description" : "Phone Number"
+        },
+        "email" : {
+          "type" : "string",
+          "description" : "Requsted Email"
+        },
+        "username" : {
+          "type" : "string",
+          "description" : "Requested Username"
+        },
+        "password" : {
+          "type" : "string",
+          "description" : "Requested Password"
+        }
+      },
+      "description" : "Request to create a new company account"
+    },
+    "ReturnSignature" : {
+      "type" : "object",
+      "properties" : {
+        "signature" : {
+          "type" : "string",
+          "description" : "base64 encoded signature."
+        }
+      }
+    },
+    "SuccessOptions" : {
+      "type" : "object",
+      "properties" : {
+        "succcess" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "AddDamage" : {
+      "type" : "object",
+      "properties" : {
+        "damage" : {
+          "type" : "array",
+          "description" : "Array of new damages to create/add.",
+          "items" : {
+            "type" : "object",
+            "properties" : {
+              "id" : {
+                "type" : "integer",
+                "description" : "always null"
+              },
+              "damageType" : {
+                "type" : "integer",
+                "description" : "Based on a subset of AIAG \"Global Vehicle Damage Codes Standard\" codes"
+              },
+              "damageComment" : {
+                "type" : "string"
+              },
+              "x" : {
+                "type" : "integer",
+                "description" : "x position relative to top left of image to center of circled damage, pixels. original image size is used."
+              },
+              "y" : {
+                "type" : "integer",
+                "description" : "y position relative to top left of image to center of circled damage, pixels. original image size is used."
+              },
+              "r" : {
+                "type" : "integer",
+                "description" : "radius of circled damage in pixels. original image size is used."
+              }
+            }
+          }
+        },
+        "caseId" : {
+          "type" : "integer"
+        },
+        "beforeAfterFlag" : {
+          "type" : "integer",
+          "description" : "1 is after, 0 is before"
+        },
+        "photoNumber" : {
+          "type" : "integer",
+          "description" : "Position of the photo which damage was noticed. Standard position ids."
+        },
+        "photoWidth" : {
+          "type" : "integer"
+        },
+        "photoHeight" : {
+          "type" : "integer"
+        }
+      }
+    },
+    "DamageListResponse" : {
+      "type" : "array",
+      "description" : "Array of existing damages.",
+      "items" : {
+        "$ref" : "#/definitions/Damage"
+      }
+    },
+    "Login" : {
+      "type" : "object",
+      "properties" : {
+        "damageuser" : {
+          "type" : "string",
+          "description" : "The user ID."
+        },
+        "damagepass" : {
+          "type" : "string",
+          "description" : "Password for user."
+        }
+      }
+    },
+    "NewCaseCreated" : {
+      "type" : "object",
+      "properties" : {
+        "carId" : {
+          "type" : "integer",
+          "description" : "The id of the new vehicle."
+        },
+        "unitNumber" : {
+          "type" : "string",
+          "description" : "The unit number of the vehicle associated with the new case. May include characters as well as numbers."
+        },
+        "licensePlate" : {
+          "type" : "string",
+          "description" : "The unit number of the vehicle associated with the new case. "
+        },
+        "model" : {
+          "type" : "string",
+          "description" : "The model of the vehicle associated with the new case."
+        },
+        "thumbnailUrl" : {
+          "type" : "string",
+          "description" : "The full URL to the image, representing the vehicle."
+        }
+      }
+    },
+    "Damage" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "description" : "Global identifier for this damage."
+        },
+        "case" : {
+          "type" : "integer",
+          "description" : "Case number which damage was found"
+        },
+        "before" : {
+          "type" : "integer",
+          "description" : "Before or after (1 is before, 0 is after)"
+        },
+        "position" : {
+          "type" : "integer",
+          "description" : "Photo position which damage was found."
+        },
+        "date" : {
+          "type" : "integer",
+          "description" : "Time damage was found (unix timestamp)"
+        },
+        "img" : {
+          "type" : "string",
+          "description" : "Zoomed thumb image of damage"
+        },
+        "originalImg" : {
+          "type" : "string",
+          "description" : "Url of original image, including identified damage marker."
+        },
+        "comment" : {
+          "type" : "string",
+          "description" : "Comment user made when damage was noticed."
+        },
+        "type" : {
+          "type" : "integer",
+          "description" : "AIAG code of damage type."
+        },
+        "fixed" : {
+          "type" : "integer",
+          "description" : "Whether damage has beenf fixed."
+        },
+        "x" : {
+          "type" : "integer",
+          "description" : "x coordinate of damaged region, based on original image size, from upper left corner."
+        },
+        "y" : {
+          "type" : "integer",
+          "description" : "y coordinate of damaged region, based on original image size, from upper left corner."
+        },
+        "r" : {
+          "type" : "integer",
+          "description" : "radius of damaged region, based on original image size, from center."
+        }
+      },
+      "title" : "Damage"
+    }
+  }
+}
